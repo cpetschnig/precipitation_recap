@@ -7,6 +7,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.net.http.HttpClient;
+
 @SpringBootApplication
 public class Application implements CommandLineRunner {
 
@@ -20,7 +22,7 @@ public class Application implements CommandLineRunner {
 		Logger logger = LoggerFactory.getLogger(Application.class);
 		logger.info("Entering run...");
 
-		Client client = new Client();
+		Client client = new Client(HttpClient.newHttpClient());
 
 		if (client.call()) {
 			logger.info("Successfully executed client call");

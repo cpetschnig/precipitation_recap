@@ -1,5 +1,8 @@
 package dev.cpetschnig.precipitation_1st.open_meteo;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -8,9 +11,12 @@ import java.net.http.HttpResponse;
 
 public class Client {
 
-    private final HttpClient client = HttpClient.newHttpClient();
+    private static final Logger log = LoggerFactory.getLogger(Client.class);
+    private HttpClient client = null;
 
-//    public Client() {}
+    public Client(HttpClient client) {
+        this.client = client;
+    }
 
     public boolean call() {
         HttpRequest request = HttpRequest.newBuilder()
@@ -20,13 +26,12 @@ public class Client {
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
-//            e.printStackTrace();
             System.err.println(e.getMessage());
-            System.err.println(e.toString());
+            log.error(String.valueOf(e));
             return false;
         }
 
-        System.out.println("response body: " + response.body());
+        System.out.printf("response body: %s\nYeah!%n", response.body());
         return true;
     }
 }
