@@ -26,7 +26,6 @@ public class TestArchive {
         return (JSONObject) parser.parse(jsonString());
     }
 
-
     @BeforeAll
     static void loadJsonFile() throws IOException, ParseException {
         json = jsonContent();
@@ -35,7 +34,10 @@ public class TestArchive {
     @Test
     void testGetPrecipitation() {
         Archive archive = new Archive(TestArchive.json);
-        float result = archive.getPrecipitation(LocalDate.of(2024, Month.OCTOBER, 7), 13);
+        Double result = archive.getPrecipitation(LocalDate.of(2024, Month.OCTOBER, 7), 13).orElse(0.0);
         assertEquals(0.10, result, 0.000001);
+
+        result = archive.getPrecipitation(LocalDate.of(2024, Month.OCTOBER, 8), 23).orElse(0.0);
+        assertEquals(3.60, result, 0.000001);
     }
 }
