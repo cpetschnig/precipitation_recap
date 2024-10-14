@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Month;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestArchive {
 
@@ -34,10 +34,19 @@ public class TestArchive {
     @Test
     void testGetPrecipitation() {
         Archive archive = new Archive(TestArchive.json);
-        Double result = archive.getPrecipitation(LocalDate.of(2024, Month.OCTOBER, 7), 13).orElse(0.0);
+        double result = archive.getPrecipitation(LocalDate.of(2024, Month.OCTOBER, 7), 13).orElse(0.0);
         assertEquals(0.10, result, 0.000001);
 
         result = archive.getPrecipitation(LocalDate.of(2024, Month.OCTOBER, 8), 23).orElse(0.0);
         assertEquals(3.60, result, 0.000001);
+    }
+
+    @Test
+    void testGetPrecipitationForDay() {
+        Archive archive = new Archive(TestArchive.json);
+        double[] expected = new double[]{0.00, 0.00, 0.00, 0.00, 0.00, 0.10, 0.20, 0.00, 0.00, 0.00, 0.00, 0.00,
+                                         0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.50, 0.90, 0.90, 0.90, 1.50, 3.60};
+        double[] result = archive.getPrecipitationForDay(LocalDate.of(2024, Month.OCTOBER, 8));
+        assertArrayEquals(expected, result);
     }
 }

@@ -10,14 +10,35 @@ import java.util.Optional;
 
 public class Archive {
 
-    private final JSONObject json;
     private final ArrayList<HourWithMeasurements> hourlyValues = new ArrayList<HourWithMeasurements>();
 
     public Archive(JSONObject json) {
-        this.json = json;
+        buildHourlyValueData(json);
     }
 
     public Optional<Double> getPrecipitation(LocalDate date, int hour) {
+        Optional<HourWithMeasurements> result = hourlyValues.stream()
+                .filter(hwm -> hwm.time().toLocalDate().isEqual(date) && hwm.time().getHour() == hour)
+                .findFirst();
+
+        return result.map(HourWithMeasurements::precipitation);
+    }
+
+    public double[] getPrecipitationForDay(LocalDate date) {
+        double[] result = new double[24];
+        Object[] intermediate = hourlyValues.stream()
+                .filter(hwm -> hwm.time().toLocalDate().isEqual(date))
+                .map(HourWithMeasurements::precipitation)
+                .toArray();
+
+        for (int i = 0; i < 24; i++) {
+            result[i] = (double) intermediate[i];
+        }
+
+        return result;
+    }
+
+    private void buildHourlyValueData(JSONObject json) {
         JSONObject hourly = (JSONObject) json.get("hourly");
 
         JSONArray times = (JSONArray) hourly.get("time");
@@ -31,12 +52,6 @@ public class Archive {
             HourWithMeasurements hwm = new HourWithMeasurements(time, temperature, precipitation);
             hourlyValues.add(hwm);
         }
-
-        Optional<HourWithMeasurements> result = hourlyValues.stream()
-                .filter(hwm -> hwm.time().toLocalDate().isEqual(date) && hwm.time().getHour() == hour)
-                .findFirst();
-
-        return result.map(HourWithMeasurements::precipitation);
     }
 }
 
