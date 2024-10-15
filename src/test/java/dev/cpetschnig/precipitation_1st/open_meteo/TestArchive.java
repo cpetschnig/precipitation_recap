@@ -10,6 +10,7 @@ import org.testcontainers.shaded.org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -39,6 +40,13 @@ public class TestArchive {
 
         result = archive.getPrecipitation(LocalDate.of(2024, Month.OCTOBER, 8), 23).orElse(0.0);
         assertEquals(3.60, result, 0.000001);
+    }
+
+    @Test
+    void testGetPrecipitationWithInvalidDate() {
+        Archive archive = new Archive(TestArchive.json);
+        Optional<Double> result = archive.getPrecipitation(LocalDate.of(1975, Month.JANUARY, 1), 0);
+        assertTrue(result.isEmpty());
     }
 
     @Test

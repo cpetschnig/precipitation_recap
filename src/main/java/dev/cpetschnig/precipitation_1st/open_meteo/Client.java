@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -16,6 +17,9 @@ import java.util.Optional;
 
 public class Client {
 
+    static final String OPEN_METEO_HOSTNAME = "archive-api.open-meteo.com";
+    static final String OPEN_METEO_ARCHIVE_PATH = "/v1/archive";
+
     private static final Logger log = LoggerFactory.getLogger(Client.class);
     private HttpClient client = null;
 
@@ -23,14 +27,16 @@ public class Client {
         this.client = client;
     }
 
-    public Optional<JSONObject> call() {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://archive-api.open-meteo.com/v1/archive?latitude=52.52&longitude=13.41&start_date=2024-09-24&end_date=2024-10-08&hourly=temperature_2m,precipitation"))
-                .build();
+    public Optional<JSONObject> call(RequestParamsBuilder requestParamsBuilder) {
+        HttpRequest request;
         HttpResponse<String> response;
+
         try {
+            request = HttpRequest.newBuilder()
+                    .uri(uri(requestParamsBuilder))
+                    .build();
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException | InterruptedException e) {
+        } catch (URISyntaxException | IOException | InterruptedException e) {
             log.error(String.valueOf(e));
             return Optional.empty();
         }
@@ -46,5 +52,9 @@ public class Client {
             log.error(String.valueOf(e));
         }
         return Optional.empty();
+    }
+
+    private URI uri(RequestParamsBuilder requestParamsBuilder) throws URISyntaxException {
+        return new URI("https", null, OPEN_METEO_HOSTNAME, -1, OPEN_METEO_ARCHIVE_PATH, requestParamsBuilder.uriParams(), null);
     }
 }
