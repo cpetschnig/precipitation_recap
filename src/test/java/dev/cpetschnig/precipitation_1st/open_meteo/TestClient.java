@@ -1,6 +1,8 @@
 package dev.cpetschnig.precipitation_1st.open_meteo;
 
 import net.minidev.json.JSONObject;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.testcontainers.shaded.org.apache.commons.io.IOUtils;
@@ -24,13 +26,19 @@ public class TestClient extends Mockito {
         );
     }
 
+    Client client;
+
+    @BeforeEach
+    void setUp() {
+        client = new Client(httpClient);
+    }
+
     @Test
+    @DisplayName("Valid call to Open-Meteo API")
     void returnsAValidJsonObject() throws IOException, InterruptedException {
         when(httpClient.send(any(), any(HttpResponse.BodyHandler.class))).thenReturn(mockedResponse);
         when(mockedResponse.body()).thenReturn(jsonString());
         when(mockedResponse.statusCode()).thenReturn(200);
-
-        Client client = new Client(httpClient);
 
         Optional<JSONObject> opt = client.call(mockedRequestParamsBuilder);
         assertTrue(opt.isPresent());
@@ -38,21 +46,19 @@ public class TestClient extends Mockito {
     }
 
     @Test
+    @DisplayName("Connection error when calling Open-Meteo API")
     void returnsAnEmptyOptionalUponConnectionError() throws IOException, InterruptedException {
         when(httpClient.send(any(), any(HttpResponse.BodyHandler.class))).thenThrow(java.net.ConnectException.class);
-
-        Client client = new Client(httpClient);
 
         Optional<JSONObject> json = client.call(mockedRequestParamsBuilder);
         assertTrue(json.isEmpty());
     }
 
     @Test
+    @DisplayName("`Not found`-error when calling Open-Meteo API")
     void returnsAnEmptyOptionalUponInvalidStatus() throws IOException, InterruptedException {
         when(httpClient.send(any(), any(HttpResponse.BodyHandler.class))).thenReturn(mockedResponse);
         when(mockedResponse.statusCode()).thenReturn(404);
-
-        Client client = new Client(httpClient);
 
         Optional<JSONObject> json = client.call(mockedRequestParamsBuilder);
         assertTrue(json.isEmpty());

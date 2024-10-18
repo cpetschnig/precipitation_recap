@@ -1,5 +1,6 @@
 package dev.cpetschnig.precipitation_1st.open_meteo;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -10,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class TestRequestParamsBuilder {
 
     @Test
+    @DisplayName("Build URI with valid params")
     void testUriParams() {
         LocalDate startDate = LocalDate.of(2024, Month.OCTOBER, 15);
         LocalDate endDate = startDate.plusWeeks(1);

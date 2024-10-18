@@ -4,6 +4,7 @@ import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.shaded.org.apache.commons.io.IOUtils;
 
@@ -33,6 +34,7 @@ public class TestArchive {
     }
 
     @Test
+    @DisplayName("Query precipitation for single hour with valid params")
     void testGetPrecipitation() {
         Archive archive = new Archive(TestArchive.json);
         double result = archive.getPrecipitation(LocalDate.of(2024, Month.OCTOBER, 7), 13).orElse(0.0);
@@ -43,6 +45,7 @@ public class TestArchive {
     }
 
     @Test
+    @DisplayName("Query precipitation for single hour with invalid date")
     void testGetPrecipitationWithInvalidDate() {
         Archive archive = new Archive(TestArchive.json);
         Optional<Double> result = archive.getPrecipitation(LocalDate.of(1975, Month.JANUARY, 1), 0);
@@ -50,6 +53,7 @@ public class TestArchive {
     }
 
     @Test
+    @DisplayName("Query precipitation for single day with valid params")
     void testGetPrecipitationForDay() {
         Archive archive = new Archive(TestArchive.json);
         double[] expected = new double[]{0.00, 0.00, 0.00, 0.00, 0.00, 0.10, 0.20, 0.00, 0.00, 0.00, 0.00, 0.00,
