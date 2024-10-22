@@ -1,6 +1,6 @@
-package dev.cpetschnig.precipitation_1st.formatter;
+package dev.cpetschnig.precipitation_recap.formatter;
 
-import dev.cpetschnig.precipitation_1st.open_meteo.Archive;
+import dev.cpetschnig.precipitation_recap.open_meteo.Archive;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

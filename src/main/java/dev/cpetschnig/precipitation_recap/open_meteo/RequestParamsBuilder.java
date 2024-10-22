@@ -1,4 +1,4 @@
-package dev.cpetschnig.precipitation_1st.open_meteo;
+package dev.cpetschnig.precipitation_recap.open_meteo;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

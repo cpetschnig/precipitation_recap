@@ -1,4 +1,4 @@
-package dev.cpetschnig.precipitation_1st.open_meteo;
+package dev.cpetschnig.precipitation_recap.open_meteo;
 
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;

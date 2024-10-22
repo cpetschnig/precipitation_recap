@@ -1,9 +1,9 @@
-package dev.cpetschnig.precipitation_1st;
+package dev.cpetschnig.precipitation_recap;
 
-import dev.cpetschnig.precipitation_1st.formatter.CliOutputFormatter;
-import dev.cpetschnig.precipitation_1st.open_meteo.Archive;
-import dev.cpetschnig.precipitation_1st.open_meteo.Client;
-import dev.cpetschnig.precipitation_1st.open_meteo.RequestParamsBuilder;
+import dev.cpetschnig.precipitation_recap.formatter.CliOutputFormatter;
+import dev.cpetschnig.precipitation_recap.open_meteo.Archive;
+import dev.cpetschnig.precipitation_recap.open_meteo.Client;
+import dev.cpetschnig.precipitation_recap.open_meteo.RequestParamsBuilder;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-package dev.cpetschnig.precipitation_1st;
+package dev.cpetschnig.precipitation_recap;
 
 import org.springframework.boot.SpringApplication;
 

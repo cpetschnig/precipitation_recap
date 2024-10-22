@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>dev.cpetschnig</groupId>
-	<artifactId>precipitation_1st</artifactId>
+	<artifactId>precipitation_recap</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>precipitation_1st</name>
-	<description>precipitation_1st</description>
+	<description>Display historic precipitation records</description>
 	<url/>
 	<licenses>
 		<license/>
