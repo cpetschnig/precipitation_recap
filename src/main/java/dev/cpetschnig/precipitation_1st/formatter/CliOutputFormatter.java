@@ -4,6 +4,7 @@ import dev.cpetschnig.precipitation_1st.open_meteo.Archive;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
 import static java.lang.Math.max;
@@ -15,6 +16,7 @@ public class CliOutputFormatter {
     private final LocalDate endDate;
     private double maxValue;
     private final double[][] values;
+    private Consumer<String> outputFunction;
 
 
     public CliOutputFormatter(Archive archive, LocalDate startDate, LocalDate endDate) {
@@ -24,13 +26,18 @@ public class CliOutputFormatter {
         maxValue = Double.MIN_VALUE;
         values = new double[endDate.compareTo(startDate) + 1][24];
         buildValues();
+        this.outputFunction = System.out::println;
+    }
+
+    public void setOutput(Consumer<String> outputFunction) {
+        this.outputFunction = outputFunction;
     }
 
     public void print() {
         LocalDate dateIterator = startDate;
         int i = 0;
         while (!dateIterator.isAfter(endDate)) {
-            System.out.println(dateIterator + ":");
+            outputFunction.accept(dateIterator + ":");
 
             StringBuilder builderLegend = new StringBuilder("    ");
 
@@ -46,18 +53,19 @@ public class CliOutputFormatter {
 
                 IntStream.range(0, segments).forEach(index -> {
 
-                    double limit = (segments - index - 1) * maxValue / segments;
+                    double halfLimit = (segments - index - 1) * maxValue / segments;
+                    double limit = (segments - index - 0.5) * maxValue / segments;
 
                     String emptyPlaceholder = index == segments - 1 ? "_" : " ";
-                    builderGraphs[index].append(value > limit ? '█' : emptyPlaceholder);
+                    builderGraphs[index].append(value > limit ? '█' : (value > halfLimit ? '▄' : emptyPlaceholder));
                     builderGraphs[index].append("    ");
                 });
 
                 builderLegend.append("%4.1f ".formatted(value));
             });
 
-            Arrays.stream(builderGraphs).forEach(System.out::println);
-            System.out.println(builderLegend + "\n");
+            Arrays.stream(builderGraphs).map(StringBuilder::toString).forEach(outputFunction);
+            outputFunction.accept(builderLegend + "\n");
 
             i++;
             dateIterator = dateIterator.plusDays(1);

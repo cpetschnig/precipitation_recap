@@ -42,11 +42,6 @@ public class Application implements CommandLineRunner {
 
 			CliOutputFormatter formatter = new CliOutputFormatter(archive, startDate, endDate);
 			formatter.print();
-
-			double[] valuesForDay = archive.getPrecipitationForDay(LocalDate.now().minusDays(2));
-			for (int i = 0; i < valuesForDay.length; i++) {
-				System.out.printf("%2d:00: %.2f%n", i, valuesForDay[i]);
-			}
 		} else {
 			logger.error("Failed to executed client call");
 		}
