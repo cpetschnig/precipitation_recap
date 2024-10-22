@@ -1,5 +1,6 @@
 package dev.cpetschnig.precipitation_1st;
 
+import dev.cpetschnig.precipitation_1st.formatter.CliOutputFormatter;
 import dev.cpetschnig.precipitation_1st.open_meteo.Archive;
 import dev.cpetschnig.precipitation_1st.open_meteo.Client;
 import dev.cpetschnig.precipitation_1st.open_meteo.RequestParamsBuilder;
@@ -38,6 +39,10 @@ public class Application implements CommandLineRunner {
 			logger.info("Successfully executed client call");
 
 			Archive archive = new Archive(json.get());
+
+			CliOutputFormatter formatter = new CliOutputFormatter(archive, startDate, endDate);
+			formatter.print();
+
 			double[] valuesForDay = archive.getPrecipitationForDay(LocalDate.now().minusDays(2));
 			for (int i = 0; i < valuesForDay.length; i++) {
 				System.out.printf("%2d:00: %.2f%n", i, valuesForDay[i]);
