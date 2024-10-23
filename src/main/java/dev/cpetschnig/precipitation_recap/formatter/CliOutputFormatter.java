@@ -4,6 +4,7 @@ import dev.cpetschnig.precipitation_recap.open_meteo.Archive;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
@@ -11,13 +12,14 @@ import static java.lang.Math.max;
 
 public class CliOutputFormatter {
 
+    static final int ABSCISSA_MAX_ROWS = 3;
+
     private final Archive archive;
     private final LocalDate startDate;
     private final LocalDate endDate;
     private double maxValue;
     private final double[][] values;
     private Consumer<String> outputFunction;
-
 
     public CliOutputFormatter(Archive archive, LocalDate startDate, LocalDate endDate) {
         this.archive = archive;
@@ -34,29 +36,25 @@ public class CliOutputFormatter {
     }
 
     public void print() {
-        LocalDate dateIterator = startDate;
-        int i = 0;
-        while (!dateIterator.isAfter(endDate)) {
-            outputFunction.accept(dateIterator + ":");
+        StringBuilder[] builderGraphs = new StringBuilder[ABSCISSA_MAX_ROWS];
+
+        iterateOverDays((date, i) -> {
+            printHeadlineForDay(date);
 
             StringBuilder builderLegend = new StringBuilder("    ");
 
-            int segments = 3;
             final double[] valuesOfTheDay = values[i];
-            StringBuilder[] builderGraphs = new StringBuilder[segments];
 
-            for (int j = 0; j < segments; j++) {
+            for (int j = 0; j < ABSCISSA_MAX_ROWS; j++) {
                 builderGraphs[j] = new StringBuilder("      ");
             }
 
             Arrays.stream(valuesOfTheDay).forEach(value -> {
+                IntStream.range(0, ABSCISSA_MAX_ROWS).forEach(index -> {
+                    double halfLimit = (ABSCISSA_MAX_ROWS - index - 1) * maxValue / ABSCISSA_MAX_ROWS;
+                    double limit = (ABSCISSA_MAX_ROWS - index - 0.5) * maxValue / ABSCISSA_MAX_ROWS;
 
-                IntStream.range(0, segments).forEach(index -> {
-
-                    double halfLimit = (segments - index - 1) * maxValue / segments;
-                    double limit = (segments - index - 0.5) * maxValue / segments;
-
-                    String emptyPlaceholder = index == segments - 1 ? "_" : " ";
+                    String emptyPlaceholder = index == ABSCISSA_MAX_ROWS - 1 ? "_" : " ";
                     builderGraphs[index].append(value > limit ? '█' : (value > halfLimit ? '▄' : emptyPlaceholder));
                     builderGraphs[index].append("    ");
                 });
@@ -66,26 +64,33 @@ public class CliOutputFormatter {
 
             Arrays.stream(builderGraphs).map(StringBuilder::toString).forEach(outputFunction);
             outputFunction.accept(builderLegend + "\n");
-
-            i++;
-            dateIterator = dateIterator.plusDays(1);
-        }
+        });
     }
 
     private void buildValues() {
-        LocalDate dateIterator = startDate;
-        int i = 0;
-        while (!dateIterator.isAfter(endDate)) {
-            double[] result = archive.getPrecipitationForDay(dateIterator);
+        iterateOverDays((date, i) -> {
+            double[] result = archive.getPrecipitationForDay(date);
             values[i] = result;
 
             double resMax = Arrays.stream(result).reduce(0.0, (memo, obj) -> max(obj, memo));
             if (resMax > maxValue) {
                 maxValue = resMax;
             }
+        });
+    }
+
+    private void iterateOverDays(BiConsumer<LocalDate, Integer> biConsumer) {
+        LocalDate dateIterator = startDate;
+        int i = 0;
+        while (!dateIterator.isAfter(endDate)) {
+            biConsumer.accept(dateIterator, i);
 
             i++;
             dateIterator = dateIterator.plusDays(1);
         }
+    }
+
+    private void printHeadlineForDay(LocalDate date) {
+        outputFunction.accept(date + ":");
     }
 }

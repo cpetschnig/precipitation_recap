@@ -25,22 +25,15 @@ public class Archive {
     }
 
     public double[] getPrecipitationForDay(LocalDate date) {
-        double[] result = new double[24];
-        Object[] intermediate = hourlyValues.stream()
+        return hourlyValues.stream()
                 .filter(hwm -> hwm.time().toLocalDate().isEqual(date))
                 .map(HourWithMeasurements::precipitation)
+                .mapToDouble(v -> v)
                 .toArray();
-
-        for (int i = 0; i < 24; i++) {
-            result[i] = (double) intermediate[i];
-        }
-
-        return result;
     }
 
     private void buildHourlyValueData(JSONObject json) {
         JSONObject hourly = (JSONObject) json.get("hourly");
-
         JSONArray times = (JSONArray) hourly.get("time");
         JSONArray temperatures = (JSONArray) hourly.get("temperature_2m");
         JSONArray precipitations = (JSONArray) hourly.get("precipitation");
